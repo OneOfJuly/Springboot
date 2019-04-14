@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+</html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>用户信息</title>
+    <link rel="stylesheet" th:href="@{../static/ui/themes/default/easyui.css}">
+    <link rel="stylesheet" th:href="@{../static/ui/themes/icon.css}">
+    <script th:src="@{../static/ui/jquery.min.js}"></script>
+    <script th:src="@{../static/ui/jquery.easyui.min.js}"></script>
+    <script th:src="@{../static/ui/locale/easyui-lang-zh_CN.js}"></script>
+    <script th:src="@{../static/ui/plugins/jquery.form.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            searchData();
+        });
+        var buttons = $.extend([], $.fn.datebox.defaults.buttons);
+        buttons.splice(1, 0, {
+            text: '清空',
+            handler: function (target) {//target对象就是当前的inupt对象，不需要写死id
+                $(target).datebox('setValue', '');
+            }
+        });
+
+        function searchData() {
+            $('#grid').datagrid({
+                url: "userList",
+                fit: false, //自动适屏功能true
+                nowrap: true,
+                autoRowHeight: false, //自动行高
+                autoRowWidth: true,
+                striped: true,
+                collapsible: false,
+                pagination: true,//允许分页
+                rownumbers: true,//行号
+                singleSelect: false,//只选择一行
+                pageSize: 5,//每一页数据数量
+                checkOnSelect: false,
+                pagePosition: 'bottom',
+                showFooter: true,
+                pageList: [5, 10, 15, 20, 25],
+                queryParams: formToJson("ff"),
+                columns: [
+                    [
+                        {field: 'username', title: '用户名', width: 200},
+                        {field: 'password', title: '密码', width: 200},
+                        {field: 'address', title: '地址', width: 100},
+                        {field: 'birthday', title: '生日', width: 100}
+                    ]
+                ]
+
+            });
+        }
+
+        //将表单数据转为json
+        function formToJson(id) {
+            var arr = $("#" + id).serializeArray();
+            var jsonStr = "";
+            jsonStr += '{';
+            for (var i = 0; i < arr.length; i++) {
+                jsonStr += '"' + arr[i].name + '":"' + arr[i].value + '",'
+            }
+            jsonStr = jsonStr.substring(0, (jsonStr.length - 1));
+            jsonStr += '}'
+
+            var json = JSON.parse(jsonStr);
+            json.birthday = $("#birthday").val();
+            return json
+        }
+
+        function resetForm() {
+            $("#birthday").val('');
+            $("#birthday").datebox('setValue', '');
+            $("#ff").get(0).reset();
+        }
+    </script>
+</head>
+
+<body class="easyui-layout">
+
+<div id="cc" class="easyui-layout" style="width: 950px; height: 600px;" data-options="fit:true">
+    <div id="back_zjwh_datagrid_div" data-options="region:'center',title:'课程章节列表'">
+        <table width="1000px;" height="20px">
+            <form id="ff">
+                <tr>
+                    <td style="text-align: right">
+                        <label>用户名:</label>
+                    </td>
+                    <td>
+                        <input class="easyui-validatebox" type="text" name="username"/>
+                    </td>
+                    <td style="text-align: right">
+                        <label>地址:</label>
+                    </td>
+                    <td>
+                        <input class="easyui-validatebox" type="text" name="address"/>
+                    </td>
+                    <td style="text-align: right">
+                        <label>生日:</label>
+                    </td>
+                    <td>
+                        <input class="easyui-datebox" type="text" id="birthday" name="birthday" value=""/>
+                    </td>
+                    <td style="text-align: right">
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reset"
+                           th:onclick="'javascript:resetForm()'">重置</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"
+                           th:onclick="'javascript:searchData()'">查询</a>&nbsp;&nbsp;
+                    </td>
+                </tr>
+            </form>
+        </table>
+        <table id="grid" title="用户列表" style="width:100%;height:95%;">
+        </table>
+    </div>
+</div>
+</body>
+</html>
