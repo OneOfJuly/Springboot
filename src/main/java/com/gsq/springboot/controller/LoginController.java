@@ -40,6 +40,7 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.removeAttribute("user");
         System.out.println("======"+session);
+        System.out.println("======"+session);
         return  "login";
     }
 }
